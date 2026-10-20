@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b766e">
-<title>Urology Calculators | Stone Volume & MIMIC</title>
+<title>Urology Calculators | Stone Volume, MIMIC, RCC & NMIBC</title>
 <style>
 :root {
   --teal:#0b766e; --teal-dark:#075c56; --ink:#17232d;
@@ -71,13 +71,15 @@ footer { color:var(--muted); font-size:.8rem; line-height:1.55; margin:17px 3px 
 <header>
   <div class="header-inner">
     <h1>Urology Calculators</h1>
-    <p>Quick clinical and research tools for urinary stone disease</p>
+    <p>Clinical and research tools for urinary stone disease and urologic oncology</p>
   </div>
 </header>
 
 <nav aria-label="Select calculator">
   <button id="volumeTab" type="button" role="tab" aria-selected="true" aria-controls="volumePanel">Stone Volume</button>
-  <button id="mimicTab" type="button" role="tab" aria-selected="false" aria-controls="mimicPanel">MIMIC · Spontaneous Passage</button>
+  <button id="mimicTab" type="button" role="tab" aria-selected="false" aria-controls="mimicPanel">MIMIC · Stone Passage</button>
+  <button id="leibovichTab" type="button" role="tab" aria-selected="false" aria-controls="leibovichPanel">Leibovich · RCC</button>
+  <button id="nmibcTab" type="button" role="tab" aria-selected="false" aria-controls="nmibcPanel">EAU NMIBC Risk</button>
 </nav>
 
 <main>
@@ -147,10 +149,29 @@ footer { color:var(--muted); font-size:.8rem; line-height:1.55; margin:17px 3px 
     <iframe class="mimic-frame" id="mimicFrame" title="Original MIMIC spontaneous stone passage calculator" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="about:blank"></iframe>
   </section>
 
+
+  <section id="leibovichPanel" class="panel mimic-panel hidden" role="tabpanel" aria-labelledby="leibovichTab">
+    <div class="mimic-toolbar">
+      <h2>Leibovich Score · Renal Cell Carcinoma</h2>
+      <p>Opens the OncoToolkit implementation of the 2003 Leibovich model for postoperative, non-metastatic clear-cell RCC. It uses pathological T and N categories, maximum tumour diameter, Fuhrman grade and histological tumour necrosis. Use the original model's intended population and do not automatically substitute current WHO/ISUP grade for Fuhrman grade.</p>
+      <a class="external-link" href="https://oncotoolkit.com/calculator/leibovich-prognostic-rcc" target="_blank" rel="noopener noreferrer">Open Leibovich calculator in a new tab ↗</a>
+    </div>
+    <iframe class="mimic-frame" id="leibovichFrame" title="OncoToolkit Leibovich RCC calculator" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="about:blank"></iframe>
+  </section>
+
+  <section id="nmibcPanel" class="panel mimic-panel hidden" role="tabpanel" aria-labelledby="nmibcTab">
+    <div class="mimic-toolbar">
+      <h2>EAU NMIBC Risk Calculator</h2>
+      <p>Original European Association of Urology calculator estimating progression risk after TURBT and assigning EAU NMIBC risk groups. It supports WHO 1973 and WHO 2004/2016 grading. The original site requires agreement to its terms. If the calculator does not appear below, open it directly.</p>
+      <a class="external-link" href="https://nmibc.net/" target="_blank" rel="noopener noreferrer">Open EAU NMIBC calculator in a new tab ↗</a>
+    </div>
+    <iframe class="mimic-frame" id="nmibcFrame" title="EAU NMIBC risk calculator" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="about:blank"></iframe>
+  </section>
+
   <footer>
-    <strong>Clinical-use notice:</strong> These tools are provided for educational and decision-support purposes, not as a substitute for clinical judgement. The MIMIC model has published population and validation limitations; consult the original evidence and interpret its output in the full clinical context. No stone-volume measurements are stored by this page. Do not enter identifiable patient information.
+    <strong>Clinical-use notice:</strong> These tools are provided for educational and decision-support purposes, not as a substitute for clinical judgement. Each model has specific inclusion criteria and limitations; consult the original evidence and interpret outputs in the full clinical context. External calculators remain hosted and controlled by their owners and may block embedding or change independently. No stone-volume measurements are stored by this page. Do not enter identifiable patient information.
     <br><br>
-    MIMIC calculator by BURST Urology Collaborative: <a href="https://bursturologycollaborative.github.io/" target="_blank" rel="noopener noreferrer">original website</a> · <a href="https://doi.org/10.1111/bju.14777" target="_blank" rel="noopener noreferrer">MIMIC study</a> · <a href="https://github.com/BURSTUrologyCollaborative/BURSTUrologyCollaborative.github.io" target="_blank" rel="noopener noreferrer">source repository</a>.
+    Sources: <a href="https://bursturologycollaborative.github.io/" target="_blank" rel="noopener noreferrer">BURST MIMIC</a> · <a href="https://oncotoolkit.com/calculator/leibovich-prognostic-rcc" target="_blank" rel="noopener noreferrer">OncoToolkit Leibovich</a> · <a href="https://nmibc.net/" target="_blank" rel="noopener noreferrer">EAU NMIBC calculator</a>.
   </footer>
 </main>
 
@@ -242,25 +263,28 @@ footer { color:var(--muted); font-size:.8rem; line-height:1.55; margin:17px 3px 
     }
   });
 
-  const volumeTab = $("volumeTab");
-  const mimicTab = $("mimicTab");
-  const volumePanel = $("volumePanel");
-  const mimicPanel = $("mimicPanel");
-  let mimicLoaded = false;
-
+  const calculators = {
+    volume: { tab: "volumeTab", panel: "volumePanel" },
+    mimic: { tab: "mimicTab", panel: "mimicPanel", frame: "mimicFrame", url: "https://bursturologycollaborative.github.io/" },
+    leibovich: { tab: "leibovichTab", panel: "leibovichPanel", frame: "leibovichFrame", url: "https://oncotoolkit.com/calculator/leibovich-prognostic-rcc" },
+    nmibc: { tab: "nmibcTab", panel: "nmibcPanel", frame: "nmibcFrame", url: "https://nmibc.net/" }
+  };
+  const loaded = new Set();
   function selectTab(which) {
-    const isVolume = which === "volume";
-    volumeTab.setAttribute("aria-selected", String(isVolume));
-    mimicTab.setAttribute("aria-selected", String(!isVolume));
-    volumePanel.classList.toggle("hidden", !isVolume);
-    mimicPanel.classList.toggle("hidden", isVolume);
-    if (!isVolume && !mimicLoaded) {
-      $("mimicFrame").src = "https://bursturologycollaborative.github.io/";
-      mimicLoaded = true;
+    Object.entries(calculators).forEach(([key, item]) => {
+      const active = key === which;
+      $(item.tab).setAttribute("aria-selected", String(active));
+      $(item.panel).classList.toggle("hidden", !active);
+    });
+    const item = calculators[which];
+    if (item.frame && !loaded.has(which)) {
+      $(item.frame).src = item.url;
+      loaded.add(which);
     }
   }
-  volumeTab.addEventListener("click", () => selectTab("volume"));
-  mimicTab.addEventListener("click", () => selectTab("mimic"));
+  Object.entries(calculators).forEach(([key, item]) => {
+    $(item.tab).addEventListener("click", () => selectTab(key));
+  });
 
   calculate();
 })();
