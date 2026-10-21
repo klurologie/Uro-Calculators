@@ -13,7 +13,7 @@ header{background:linear-gradient(135deg,#102a43,#1769aa);color:#fff;padding:25p
 <header><div class="wrap"><h1>Uro Calculators</h1><p>A practical collection of urology calculators and clinical decision-support tools.</p></div></header>
 <main><nav class="tabs" role="tablist" aria-label="Calculators">
 <button class="tab" role="tab" aria-controls="panel-stone" aria-selected="true" data-panel="stone">Stone Volume</button><button class="tab" role="tab" aria-controls="panel-mimic" aria-selected="false" data-panel="mimic">MIMIC · Stone Passage</button><button class="tab" role="tab" aria-controls="panel-leibovich" aria-selected="false" data-panel="leibovich">Leibovich · RCC</button><button class="tab" role="tab" aria-controls="panel-renal" aria-selected="false" data-panel="renal">RENAL Score</button><button class="tab" role="tab" aria-controls="panel-nmibc" aria-selected="false" data-panel="nmibc">EAU · NMIBC Risk</button><button class="tab" role="tab" aria-controls="panel-mskcc" aria-selected="false" data-panel="mskcc">MSKCC · Prostate</button></nav>
-<section class="panel active" id="panel-stone" role="tabpanel"><div class="card"><h2>Stone Volume Calculator</h2><p class="sub">All dimensions in mm · Volume in cm³</p>
+<section class="panel active" id="panel-stone" role="tabpanel"><div class="card tool-card"><h2>Stone Volume Calculator</h2><p class="sub">All dimensions in mm · Volume in cm³</p>
 <div class="shape-toggle" role="group" aria-label="Stone geometry"><button type="button" class="active" data-shape="sphere">Sphere — round stone</button><button type="button" data-shape="ellipsoid">Ellipsoid — oval stone</button></div>
 <div class="dimension"><div class="dimension-head"><label for="height">Height</label><span class="unit">mm</span></div><div class="dimension-controls"><input id="heightRange" type="range" min="1" max="100" step="0.1" value="10" aria-label="Height slider"><input id="height" type="number" min="0.1" max="1000" step="0.1" value="10"></div></div>
 <div class="dimension"><div class="dimension-head"><label for="depth">Depth</label><span class="unit">mm</span></div><div class="dimension-controls"><input id="depthRange" type="range" min="1" max="100" step="0.1" value="10" aria-label="Depth slider"><input id="depth" type="number" min="0.1" max="1000" step="0.1" value="10"></div></div>
@@ -22,7 +22,22 @@ header{background:linear-gradient(135deg,#102a43,#1769aa);color:#fff;padding:25p
 <div class="formula" id="formula">Sphere formula: V = π × D³ / 6, using the mean of the three dimensions as diameter.</div><div class="actions"><button class="btn secondary" id="reset">Reset dimensions</button><button class="btn" id="copyResult">Copy result</button></div>
 <p class="notice">This calculator provides a geometric estimate only. Irregular stone shape and imaging measurement variability can affect the true volume. Use clinical judgement and local practice.</p></div></section>
 <section class="panel" id="panel-mimic" role="tabpanel"><div class="card tool-card"><h2>MIMIC · Stone Passage</h2><p class="sub">Original BURST Urology Collaborative tool for stone passage support.</p><div class="external"><a href="https://bursturologycollaborative.github.io/" target="_blank" rel="noopener noreferrer">Open the original MIMIC calculator ↗</a><p>If the embedded calculator is blank, open it directly in a new tab.</p></div><div class="frame-wrap"><iframe title="BURST MIMIC calculator" data-src="https://bursturologycollaborative.github.io/" loading="lazy"></iframe></div><p class="notice">Hosted and maintained by its original publisher.</p></div></section>
-<section class="panel" id="panel-leibovich" role="tabpanel"><div class="card tool-card"><h2>Leibovich · RCC</h2><p class="sub">Postoperative prognostic score for non-metastatic clear-cell renal cell carcinoma.</p><div class="external"><a href="https://oncotoolkit.com/calculator/leibovich-prognostic-rcc" target="_blank" rel="noopener noreferrer">Open OncoToolkit Leibovich calculator ↗</a><p>If embedding is unavailable, use the direct link.</p></div><div class="frame-wrap"><iframe title="Leibovich RCC calculator" data-src="https://oncotoolkit.com/calculator/leibovich-prognostic-rcc" loading="lazy"></iframe></div><p class="notice">The classic model uses pathological stage, nodal status, tumour size, nuclear grade and tumour necrosis. Confirm applicability to the patient and grading system.</p></div></section>
+<style>
+#panel-leibovich .lb-step{border:1px solid var(--border);border-radius:14px;padding:17px;margin:13px 0;background:#fff}
+#panel-leibovich .lb-step h3{margin:0 0 10px;font-size:1.02rem;color:var(--navy)}
+#panel-leibovich .lb-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#panel-leibovich .lb-option{display:flex;align-items:center;gap:9px;padding:12px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;min-height:49px;font-size:.92rem}
+#panel-leibovich .lb-option:has(input:checked){border-color:var(--blue);background:#edf6ff}
+#panel-leibovich .lb-option input{accent-color:var(--blue)}
+#panel-leibovich .lb-option b{margin-left:auto;color:var(--muted);white-space:nowrap;font-size:.82rem}
+#panel-leibovich .lb-results{background:linear-gradient(135deg,#102a43,#174f75);color:#fff;border-radius:15px;padding:22px;margin:20px 0 12px}
+#panel-leibovich .lb-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+#panel-leibovich .lb-summary>div+div{border-left:1px solid #ffffff50;padding-left:15px}
+#panel-leibovich .lb-summary strong{display:block;font-size:clamp(1.35rem,3.5vw,2.1rem);line-height:1.2}
+#panel-leibovich .lb-summary span{display:block;color:#d5e5f1;font-size:.79rem;margin-top:7px}
+#panel-leibovich .lb-small{font-size:.82rem;color:#d5e5f1;margin:15px 0 0}
+@media(max-width:600px){#panel-leibovich .lb-options{grid-template-columns:1fr}#panel-leibovich .lb-summary{grid-template-columns:1fr 1fr}#panel-leibovich .lb-summary>div:nth-child(3){grid-column:1/-1;border-left:0;border-top:1px solid #ffffff50;padding:12px 0 0}}
+</style><section class="panel" id="panel-leibovich" role="tabpanel"><div class="card tool-card"><h2>Leibovich Score</h2><p class="sub">2003 model · Postoperative risk stratification for clear-cell renal cell carcinoma</p><div class="lb-step"><h3>1. Pathological T stage</h3><div class="lb-options"><label class="lb-option"><input type="radio" name="lb-stage" value="0" checked><span>pT1a</span><b>+0</b></label><label class="lb-option"><input type="radio" name="lb-stage" value="2" ><span>pT1b</span><b>+2</b></label><label class="lb-option"><input type="radio" name="lb-stage" value="3" ><span>pT2</span><b>+3</b></label><label class="lb-option"><input type="radio" name="lb-stage" value="4" ><span>pT3a / pT3b / pT3c</span><b>+4</b></label><label class="lb-option"><input type="radio" name="lb-stage" value="4" ><span>pT4</span><b>+4</b></label></div></div><div class="lb-step"><h3>2. Regional lymph nodes</h3><div class="lb-options"><label class="lb-option"><input type="radio" name="lb-nodes" value="0" checked><span>pNx / pN0</span><b>+0</b></label><label class="lb-option"><input type="radio" name="lb-nodes" value="2" ><span>pN1 / pN2</span><b>+2</b></label></div></div><div class="lb-step"><h3>3. Tumour size</h3><div class="lb-options"><label class="lb-option"><input type="radio" name="lb-size" value="0" checked><span>Less than 10 cm</span><b>+0</b></label><label class="lb-option"><input type="radio" name="lb-size" value="1" ><span>10 cm or larger</span><b>+1</b></label></div></div><div class="lb-step"><h3>4. Nuclear grade (Fuhrman)</h3><div class="lb-options"><label class="lb-option"><input type="radio" name="lb-grade" value="0" checked><span>Grade 1</span><b>+0</b></label><label class="lb-option"><input type="radio" name="lb-grade" value="0" ><span>Grade 2</span><b>+0</b></label><label class="lb-option"><input type="radio" name="lb-grade" value="1" ><span>Grade 3</span><b>+1</b></label><label class="lb-option"><input type="radio" name="lb-grade" value="3" ><span>Grade 4</span><b>+3</b></label></div></div><div class="lb-step"><h3>5. Histological tumour necrosis</h3><div class="lb-options"><label class="lb-option"><input type="radio" name="lb-necrosis" value="0" checked><span>Absent</span><b>+0</b></label><label class="lb-option"><input type="radio" name="lb-necrosis" value="1" ><span>Present</span><b>+1</b></label></div></div><div class="lb-results" aria-live="polite"><div class="lb-summary"><div><strong id="lb-score">0</strong><span>Leibovich score / 11</span></div><div><strong id="lb-risk">Low</strong><span>Risk category</span></div><div><strong id="lb-mfs">97.1%</strong><span>5-year metastasis-free survival</span></div></div><p class="lb-small" id="lb-extra">Estimated 1-year MFS: 99.5% · 10-year MFS: 92.5%</p></div><div class="actions"><button class="btn secondary" type="button" id="lb-reset">Reset calculator</button></div><p class="notice">Based on the Leibovich et al. 2003 model (2002 TNM staging, Fuhrman grade), developed after radical nephrectomy for clear-cell RCC. Percentages are cohort-level risk-group estimates, not individual predictions. Check histology, stage definitions and current guidance before clinical use. <a href="https://doi.org/10.1002/cncr.11234" target="_blank" rel="noopener noreferrer">Original study ↗</a> · <a href="https://uroweb.org/guidelines/renal-cell-carcinoma/chapter/prognostic-factors" target="_blank" rel="noopener noreferrer">EAU guidance ↗</a></p></div></section>
 <section class="panel" id="panel-renal" role="tabpanel">
 <style>
 /* RENAL calculator: compact, MDCalc-inspired selectable answer cards */
@@ -185,5 +200,21 @@ document.getElementById('renalReset').addEventListener('click',()=>{
 });
 
 activate('stone');calculate();
+})();
+</script><script>
+(function(){
+const names=['stage','nodes','size','grade','necrosis'];
+function calculate(){
+ const score=names.reduce((sum,name)=>sum+Number(document.querySelector('input[name="lb-'+name+'"]:checked')?.value||0),0);
+ const risk=score<=2?'Low':score<=5?'Intermediate':'High';
+ const rates=score<=2?[99.5,97.1,92.5]:score<=5?[90.4,73.8,64.3]:[57.7,31.2,23.6];
+ document.getElementById('lb-score').textContent=score;
+ document.getElementById('lb-risk').textContent=risk;
+ document.getElementById('lb-mfs').textContent=rates[1].toFixed(1)+'%';
+ document.getElementById('lb-extra').textContent='Estimated 1-year MFS: '+rates[0].toFixed(1)+'% · 10-year MFS: '+rates[2].toFixed(1)+'%';
+}
+document.querySelectorAll('#panel-leibovich input[type="radio"]').forEach(el=>el.addEventListener('change',calculate));
+document.getElementById('lb-reset').addEventListener('click',()=>{names.forEach(name=>{document.querySelector('input[name="lb-'+name+'"]').checked=true});calculate()});
+calculate();
 })();
 </script></body></html>
