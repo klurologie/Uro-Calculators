@@ -12,7 +12,7 @@ header{background:linear-gradient(135deg,#102a43,#1769aa);color:#fff;padding:25p
 </style></head><body>
 <header><div class="wrap"><h1>Uro Calculators</h1><p>A practical collection of urology calculators and clinical decision-support tools.</p></div></header>
 <main><nav class="tabs" role="tablist" aria-label="Calculators">
-<button class="tab" role="tab" aria-controls="panel-stone" aria-selected="true" data-panel="stone">Stone Volume</button><button class="tab" role="tab" aria-controls="panel-mimic" aria-selected="false" data-panel="mimic">MIMIC · Stone Passage</button><button class="tab" role="tab" aria-controls="panel-leibovich" aria-selected="false" data-panel="leibovich">Leibovich · RCC</button><button class="tab" role="tab" aria-controls="panel-nmibc" aria-selected="false" data-panel="nmibc">EAU · NMIBC Risk</button><button class="tab" role="tab" aria-controls="panel-mskcc" aria-selected="false" data-panel="mskcc">MSKCC · Prostate</button></nav>
+<button class="tab" role="tab" aria-controls="panel-stone" aria-selected="true" data-panel="stone">Stone Volume</button><button class="tab" role="tab" aria-controls="panel-mimic" aria-selected="false" data-panel="mimic">MIMIC · Stone Passage</button><button class="tab" role="tab" aria-controls="panel-leibovich" aria-selected="false" data-panel="leibovich">Leibovich · RCC</button><button class="tab" role="tab" aria-controls="panel-renal" aria-selected="false" data-panel="renal">RENAL Score</button><button class="tab" role="tab" aria-controls="panel-nmibc" aria-selected="false" data-panel="nmibc">EAU · NMIBC Risk</button><button class="tab" role="tab" aria-controls="panel-mskcc" aria-selected="false" data-panel="mskcc">MSKCC · Prostate</button></nav>
 <section class="panel active" id="panel-stone" role="tabpanel"><div class="card"><h2>Stone Volume Calculator</h2><p class="sub">All dimensions in mm · Volume in cm³</p>
 <div class="shape-toggle" role="group" aria-label="Stone geometry"><button type="button" class="active" data-shape="sphere">Sphere — round stone</button><button type="button" data-shape="ellipsoid">Ellipsoid — oval stone</button></div>
 <div class="dimension"><div class="dimension-head"><label for="height">Height</label><span class="unit">mm</span></div><div class="dimension-controls"><input id="heightRange" type="range" min="1" max="100" step="0.1" value="10" aria-label="Height slider"><input id="height" type="number" min="0.1" max="1000" step="0.1" value="10"></div></div>
@@ -23,8 +23,128 @@ header{background:linear-gradient(135deg,#102a43,#1769aa);color:#fff;padding:25p
 <p class="notice">This calculator provides a geometric estimate only. Irregular stone shape and imaging measurement variability can affect the true volume. Use clinical judgement and local practice.</p></div></section>
 <section class="panel" id="panel-mimic" role="tabpanel"><div class="card tool-card"><h2>MIMIC · Stone Passage</h2><p class="sub">Original BURST Urology Collaborative tool for stone passage support.</p><div class="external"><a href="https://bursturologycollaborative.github.io/" target="_blank" rel="noopener noreferrer">Open the original MIMIC calculator ↗</a><p>If the embedded calculator is blank, open it directly in a new tab.</p></div><div class="frame-wrap"><iframe title="BURST MIMIC calculator" data-src="https://bursturologycollaborative.github.io/" loading="lazy"></iframe></div><p class="notice">Hosted and maintained by its original publisher.</p></div></section>
 <section class="panel" id="panel-leibovich" role="tabpanel"><div class="card tool-card"><h2>Leibovich · RCC</h2><p class="sub">Postoperative prognostic score for non-metastatic clear-cell renal cell carcinoma.</p><div class="external"><a href="https://oncotoolkit.com/calculator/leibovich-prognostic-rcc" target="_blank" rel="noopener noreferrer">Open OncoToolkit Leibovich calculator ↗</a><p>If embedding is unavailable, use the direct link.</p></div><div class="frame-wrap"><iframe title="Leibovich RCC calculator" data-src="https://oncotoolkit.com/calculator/leibovich-prognostic-rcc" loading="lazy"></iframe></div><p class="notice">The classic model uses pathological stage, nodal status, tumour size, nuclear grade and tumour necrosis. Confirm applicability to the patient and grading system.</p></div></section>
+<section class="panel" id="panel-renal" role="tabpanel">
+<style>
+/* RENAL calculator: compact, MDCalc-inspired selectable answer cards */
+#panel-renal .renal-intro{display:flex;gap:14px;align-items:flex-start;margin-bottom:22px}
+#panel-renal .renal-mark{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:14px;background:#e5f3f4;color:#087f8c;font-weight:850;font-size:1.05rem}
+#panel-renal .renal-step{border:1px solid var(--border);border-radius:15px;padding:17px;margin:13px 0;background:#fff}
+#panel-renal .renal-step-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:13px}
+#panel-renal .renal-letter{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:10px;background:#edf4fa;color:#1769aa;font-size:1.15rem;font-weight:800}
+#panel-renal .renal-step h3{font-size:1.02rem;margin:0;color:var(--navy)}
+#panel-renal .renal-help{font-size:.88rem;color:var(--muted);margin:3px 0 0}
+#panel-renal .renal-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#panel-renal .renal-options.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+#panel-renal .renal-option{position:relative;display:flex;gap:9px;align-items:flex-start;border:1.5px solid var(--border);border-radius:11px;padding:12px;cursor:pointer;background:#fff;min-height:76px;transition:border-color .15s,background .15s,box-shadow .15s}
+#panel-renal .renal-option:hover{border-color:#7aaed3;background:#f8fbfe}
+#panel-renal .renal-option:has(input:checked){border-color:var(--blue);background:#edf6ff;box-shadow:inset 0 0 0 1px var(--blue)}
+#panel-renal .renal-option input{accent-color:var(--blue);margin:3px 0 0;flex:0 0 auto;width:16px;height:16px}
+#panel-renal .renal-option-copy{display:block;min-width:0}
+#panel-renal .renal-option-title{display:block;font-size:.92rem;font-weight:700;line-height:1.35;color:var(--text)}
+#panel-renal .renal-option-detail{display:block;font-size:.82rem;line-height:1.35;color:var(--muted);margin-top:4px}
+#panel-renal .renal-points{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:23px;padding:0 6px;border-radius:7px;background:#e8eef5;color:#31465e;font-size:.78rem;font-weight:800;margin-top:7px}
+#panel-renal .renal-option:has(input:checked) .renal-points{background:#1769aa;color:white}
+#panel-renal .renal-risk{border-left:1px solid #ffffff55;padding-left:18px;min-width:170px}#panel-renal .renal-risk strong{display:block;font-size:2.4rem;line-height:1.1}#panel-renal .renal-risk span{display:block;font-size:.82rem;color:#d7e6f1;margin-top:8px}#panel-renal .renal-risk-note{font-size:.76rem;color:#cbdbe7;margin:9px 0 0}#panel-renal .renal-scorebox{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:linear-gradient(135deg,#102a43,#174f75);color:#fff;padding:22px;border-radius:16px;margin-top:20px}
+#panel-renal .renal-score-num{display:grid;place-items:center;min-width:105px;min-height:100px;border:1px solid #ffffff40;background:#ffffff12;border-radius:14px;padding:10px}
+#panel-renal .renal-score-num small{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:#c8deed;font-weight:750}
+#panel-renal .renal-score-num strong{font-size:2.5rem;line-height:1.1}
+#panel-renal .renal-scorebox h3{color:#fff;margin:0 0 5px;font-size:1.15rem}
+#panel-renal .renal-scorebox p{color:#d7e6f1;margin:0;font-size:.92rem}
+#panel-renal .renal-meter{height:8px;background:#ffffff30;border-radius:10px;overflow:hidden;margin-top:12px}
+#panel-renal .renal-meter span{display:block;height:100%;width:0;background:#69d1c8;border-radius:10px;transition:width .2s}
+#panel-renal .renal-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+#panel-renal .renal-chip{background:#eaf2f9;color:#23445e;border-radius:9px;padding:8px 10px;font-size:.84rem;font-weight:650}
+#panel-renal .renal-hilar{display:flex;gap:12px;align-items:flex-start;padding:15px;border:1px solid var(--border);border-radius:13px;background:#f8fafc;margin-top:13px}
+#panel-renal .renal-hilar input{width:19px;height:19px;accent-color:var(--teal);margin-top:3px}
+#panel-renal .renal-hilar strong{display:block}
+#panel-renal .renal-hilar span{font-size:.88rem;color:var(--muted)}
+#panel-renal .renal-figure{background:#f7fafc;border:1px solid var(--border);border-radius:14px;padding:12px;overflow:hidden}
+@media(max-width:680px){#panel-renal .renal-options{grid-template-columns:1fr}#panel-renal .renal-options.two{grid-template-columns:1fr}#panel-renal .renal-option{min-height:unset}#panel-renal .renal-risk{border-left:1px solid #ffffff55;padding-left:18px;min-width:170px}#panel-renal .renal-risk strong{display:block;font-size:2.4rem;line-height:1.1}#panel-renal .renal-risk span{display:block;font-size:.82rem;color:#d7e6f1;margin-top:8px}#panel-renal .renal-risk-note{font-size:.76rem;color:#cbdbe7;margin:9px 0 0}#panel-renal .renal-scorebox{grid-template-columns:1fr}#panel-renal .renal-risk{border-left:0;border-top:1px solid #ffffff55;padding:14px 0 0}#panel-renal .renal-score-num{min-height:unset;display:flex;justify-content:space-between;gap:15px}#panel-renal .renal-score-num strong{font-size:2rem}#panel-renal .renal-intro{gap:10px}}
+</style>
+<div class="card tool-card">
+<div class="renal-intro">
+  <div class="renal-mark">R.E.N.A.L.</div>
+  <div><h2 style="margin:0 0 5px">RENAL Nephrometry Score</h2><p class="sub" style="margin:0">Assess the anatomical complexity of a solid renal mass using CT or MRI. Select one answer in each section; your score updates automatically.</p></div>
+</div>
+
+<div class="renal-step">
+ <div class="renal-step-head"><div class="renal-letter">R</div><div><h3>Radius — maximum tumour diameter</h3><p class="renal-help">Largest diameter in any single plane</p></div></div>
+ <div class="renal-options">
+  <label class="renal-option"><input type="radio" name="renalR" value="1" checked><span class="renal-option-copy"><span class="renal-option-title">≤ 4 cm</span><span class="renal-option-detail">Smallest size category</span><span class="renal-points">1 point</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalR" value="2"><span class="renal-option-copy"><span class="renal-option-title">&gt; 4 and &lt; 7 cm</span><span class="renal-option-detail">Intermediate diameter</span><span class="renal-points">2 points</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalR" value="3"><span class="renal-option-copy"><span class="renal-option-title">≥ 7 cm</span><span class="renal-option-detail">Largest size category</span><span class="renal-points">3 points</span></span></label>
+ </div>
+</div>
+
+<div class="renal-step">
+ <div class="renal-step-head"><div class="renal-letter">E</div><div><h3>Exophytic / endophytic properties</h3><p class="renal-help">How much of the mass protrudes beyond the renal contour?</p></div></div>
+ <div class="renal-options">
+  <label class="renal-option"><input type="radio" name="renalE" value="1" checked><span class="renal-option-copy"><span class="renal-option-title">≥ 50% exophytic</span><span class="renal-option-detail">At least half protrudes outward</span><span class="renal-points">1 point</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalE" value="2"><span class="renal-option-copy"><span class="renal-option-title">&lt; 50% exophytic</span><span class="renal-option-detail">Less than half protrudes outward</span><span class="renal-points">2 points</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalE" value="3"><span class="renal-option-copy"><span class="renal-option-title">Entirely endophytic</span><span class="renal-option-detail">Contained within the renal contour</span><span class="renal-points">3 points</span></span></label>
+ </div>
+</div>
+
+<div class="renal-step">
+ <div class="renal-step-head"><div class="renal-letter">N</div><div><h3>Nearness to collecting system or renal sinus</h3><p class="renal-help">Shortest distance from the tumour to the collecting system or sinus</p></div></div>
+ <div class="renal-options">
+  <label class="renal-option"><input type="radio" name="renalN" value="1" checked><span class="renal-option-copy"><span class="renal-option-title">≥ 7 mm</span><span class="renal-option-detail">Farthest distance category</span><span class="renal-points">1 point</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalN" value="2"><span class="renal-option-copy"><span class="renal-option-title">&gt; 4 and &lt; 7 mm</span><span class="renal-option-detail">Intermediate distance</span><span class="renal-points">2 points</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalN" value="3"><span class="renal-option-copy"><span class="renal-option-title">≤ 4 mm</span><span class="renal-option-detail">Closest distance category</span><span class="renal-points">3 points</span></span></label>
+ </div>
+</div>
+
+<div class="renal-step">
+ <div class="renal-step-head"><div class="renal-letter">A</div><div><h3>Anterior / posterior descriptor</h3><p class="renal-help">Primary location relative to the coronal plane at the level of the hilar vessels. This descriptor adds no points.</p></div></div>
+ <div class="renal-options">
+  <label class="renal-option"><input type="radio" name="renalA" value="a" checked><span class="renal-option-copy"><span class="renal-option-title">Anterior</span><span class="renal-option-detail">Mass lies anteriorly</span><span class="renal-points">a</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalA" value="p"><span class="renal-option-copy"><span class="renal-option-title">Posterior</span><span class="renal-option-detail">Mass lies posteriorly</span><span class="renal-points">p</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalA" value="x"><span class="renal-option-copy"><span class="renal-option-title">Neither / indeterminate</span><span class="renal-option-detail">No clear anterior or posterior descriptor</span><span class="renal-points">x</span></span></label>
+ </div>
+</div>
+
+<div class="renal-step">
+ <div class="renal-step-head"><div class="renal-letter">L</div><div><h3>Location relative to polar lines</h3><p class="renal-help">Use the upper and lower polar lines on cross-sectional imaging to assess tumour location.</p></div></div>
+ <div class="renal-options">
+  <label class="renal-option"><input type="radio" name="renalL" value="1" checked><span class="renal-option-copy"><span class="renal-option-title">Entirely above or below</span><span class="renal-option-detail">Entirely above the upper or below the lower polar line</span><span class="renal-points">1 point</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalL" value="2"><span class="renal-option-copy"><span class="renal-option-title">Crosses one polar line</span><span class="renal-option-detail">Tumour crosses an upper or lower polar line</span><span class="renal-points">2 points</span></span></label>
+  <label class="renal-option"><input type="radio" name="renalL" value="3"><span class="renal-option-copy"><span class="renal-option-title">Central / crosses midline</span><span class="renal-option-detail">&gt;50% across a polar line, crosses the axial renal midline, entirely between polar lines, or crosses both polar lines</span><span class="renal-points">3 points</span></span></label>
+ </div>
+</div>
+
+<label class="renal-hilar"><input type="checkbox" id="renalH"><span><strong>H — Hilar tumour</strong><span>Tumour touches the main renal artery or vein. Adds the suffix <b>h</b> to the score, but no numeric points.</span></span></label>
+
+<div class="renal-scorebox" aria-live="polite">
+ <div class="renal-score-num"><small>Total score</small><strong id="renalTotal">4a</strong></div>
+ <div><h3 id="renalComplexity">Low complexity</h3><p id="renalScoreDescription">Numeric score: 4 of 12. Lower anatomical complexity group.</p><div class="renal-meter"><span id="renalMeterFill"></span></div><div class="renal-summary" id="renalBreakdown"><span class="renal-chip">R 1</span><span class="renal-chip">E 1</span><span class="renal-chip">N 1</span><span class="renal-chip">L 1</span><span class="renal-chip">A a</span></div></div>
+ <div class="renal-risk"><strong id="renalRisk">6.4%</strong><span>Estimated likelihood of major complication</span><p class="renal-risk-note">Published group-level estimate; not an individual risk prediction.</p></div>
+</div>
+<p class="sub" style="margin-top:10px">Complication percentages are observational estimates by RENAL complexity category (low 6.4%, intermediate 11.1%, high 21.9%), not probabilities validated for every patient or procedure.</p>
+<div class="actions"><button type="button" class="btn secondary" id="renalReset">Reset score</button><a class="btn" href="https://www.mdcalc.com/calc/3908/renal-nephrometry-score" target="_blank" rel="noopener noreferrer">Open MDCalc reference ↗</a></div>
+
+<h3 style="margin:28px 0 8px">Visual guide: polar-line location (L)</h3>
+<p class="sub">Blue dashed lines indicate the upper and lower polar lines; the teal dashed line is a conceptual axial renal midline. These simplified diagrams illustrate the scoring definitions and are not a substitute for reviewing CT or MRI.</p>
+<div class="renal-figure">
+<svg viewBox="0 0 900 350" role="img" aria-labelledby="renalFigureTitle renalFigureDesc" style="display:block;width:100%;height:auto">
+<title id="renalFigureTitle">RENAL nephrometry L component: polar-line examples</title>
+<desc id="renalFigureDesc">Three kidney schematics show a tumour outside the polar-line interval for L1, crossing one polar line for L2, and a central tumour for L3. Blue dashed lines are polar lines and the teal dashed line is a conceptual renal midline.</desc>
+<defs><style>
+.rk{fill:#f4c8bd;stroke:#a85b52;stroke-width:2.4}.sinus{fill:#f7e8bd;stroke:#c5a35b;stroke-width:1.5}.pl{stroke:#1769aa;stroke-width:2.2;stroke-dasharray:7 5}.mid{stroke:#087f8c;stroke-width:2;stroke-dasharray:4 5}.mass{fill:#c94f45;fill-opacity:.9;stroke:#8f2d2a;stroke-width:2}.ft{font:700 17px Arial,sans-serif;fill:#102a43}.fs{font:13px Arial,sans-serif;fill:#42566b}.legend{font:12px Arial,sans-serif;fill:#42566b}
+</style><g id="kidneyBase"><path class="rk" d="M112 26 C76 8 34 27 24 67 C13 109 28 158 58 181 C83 201 115 183 116 157 C117 137 99 124 98 108 C97 91 121 82 131 65 C142 47 132 34 112 26 Z"/><path class="sinus" d="M93 74 C74 81 70 101 82 114 C94 127 94 143 85 154 C105 147 111 130 104 115 C98 102 107 91 116 82 Z"/><line class="pl" x1="25" y1="66" x2="132" y2="66"/><line class="pl" x1="31" y1="143" x2="115" y2="143"/><line class="mid" x1="75" y1="16" x2="75" y2="192"/></g></defs>
+<g transform="translate(18,8)"><use href="#kidneyBase"/><ellipse class="mass" cx="78" cy="42" rx="18" ry="14"/><text class="ft" x="75" y="224" text-anchor="middle">L = 1</text><text class="fs" x="75" y="246" text-anchor="middle">Entirely above upper or</text><text class="fs" x="75" y="263" text-anchor="middle">below lower polar line</text></g>
+<g transform="translate(318,8)"><use href="#kidneyBase"/><ellipse class="mass" cx="72" cy="73" rx="22" ry="25"/><text class="ft" x="75" y="224" text-anchor="middle">L = 2</text><text class="fs" x="75" y="246" text-anchor="middle">Crosses one</text><text class="fs" x="75" y="263" text-anchor="middle">polar line</text></g>
+<g transform="translate(618,8)"><use href="#kidneyBase"/><ellipse class="mass" cx="76" cy="105" rx="25" ry="31"/><text class="ft" x="75" y="224" text-anchor="middle">L = 3</text><text class="fs" x="75" y="246" text-anchor="middle">&gt;50% across polar line,</text><text class="fs" x="75" y="263" text-anchor="middle">crosses axial midline, or</text><text class="fs" x="75" y="280" text-anchor="middle">entirely between polar lines</text></g>
+<g transform="translate(22,317)"><line class="pl" x1="0" y1="0" x2="34" y2="0"/><text class="legend" x="42" y="4">Polar lines</text><line class="mid" x1="140" y1="-8" x2="140" y2="8"/><text class="legend" x="150" y="4">Axial renal midline (conceptual)</text><ellipse class="mass" cx="340" cy="0" rx="9" ry="7"/><text class="legend" x="355" y="4">Tumour</text></g>
+</svg>
+<p class="notice" style="margin:8px 0 0">Original educational schematic. Apply the validated definitions to the appropriate imaging planes and local reporting protocol.</p>
+</div>
+
+<p class="notice" style="margin-top:18px">Interpretation: 4–6 = low complexity; 7–9 = intermediate complexity; 10–12 = high complexity. The numeric total is R + E + N + L; A is a non-numeric descriptor. Append “h” when hilar criteria are met. Use CT/MRI, not ultrasound. The score describes anatomical complexity and should support—not replace—clinical judgement.</p>
+<div class="external"><strong>Reference:</strong> <a href="https://www.mdcalc.com/calc/3908/renal-nephrometry-score" target="_blank" rel="noopener noreferrer">MDCalc RENAL Nephrometry Score ↗</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/19616235/" target="_blank" rel="noopener noreferrer">Original publication ↗</a></div>
+</div></section>
 <section class="panel" id="panel-nmibc" role="tabpanel"><div class="card tool-card"><h2>EAU · NMIBC Risk Calculator</h2><p class="sub">Risk-group and progression-risk estimation for non-muscle-invasive bladder cancer.</p><div class="external"><a href="https://nmibc.net/" target="_blank" rel="noopener noreferrer">Open EAU NMIBC Risk Calculator ↗</a><p>The original site may require acceptance of its terms and may block embedded display.</p></div><div class="frame-wrap"><iframe title="EAU NMIBC risk calculator" data-src="https://nmibc.net/" loading="lazy"></iframe></div><p class="notice">Use within its intended population and grading framework. Review the original site's terms and do not enter patient-identifiable information.</p></div></section>
-<section class="panel" id="panel-mskcc" role="tabpanel"><div class="card tool-card"><h2>MSKCC · Pre-Radical Prostatectomy</h2><p class="sub">Memorial Sloan Kettering Cancer Center pre-operative prostate cancer nomogram.</p><div class="external"><a href="https://www.mskcc.org/nomograms/prostate/pre_op" target="_blank" rel="noopener noreferrer">Open the original MSKCC nomogram ↗</a><p>If embedding is blocked, use the direct link above.</p></div><div class="frame-wrap"><iframe title="MSKCC Pre-Radical Prostatectomy Nomogram" data-src="https://www.mskcc.org/nomograms/prostate/pre_op" loading="lazy"></iframe></div><p class="notice">Estimates do not replace clinical judgement and may not apply to every patient. Review MSKCC's own instructions and limitations. Avoid entering patient-identifiable data.</p></div></section>
+<section class="panel" id="panel-mskcc" role="tabpanel"><div class="card tool-card"><h2>MSKCC · Pre-Radical Prostatectomy</h2><p class="sub">Memorial Sloan Kettering Cancer Center pre-operative prostate cancer nomogram.</p><div class="external"><p><strong>The MSKCC nomogram is opened directly on the official MSKCC website.</strong> Its page may not work when embedded inside another website, so this tab opens it in a separate tab instead.</p><p><a class="btn" href="https://www.mskcc.org/nomograms/prostate/pre_op" target="_blank" rel="noopener noreferrer">Open official MSKCC nomogram ↗</a></p></div><p class="notice">MSKCC notes that results are not applicable after hormone or radiation therapy for prostate cancer. Estimates are based on MSK patients and must be interpreted in the context of the individual treatment plan. Review the original instructions and avoid entering patient-identifiable data.</p></div></section>
+
 </main><div class="footer">External calculators remain hosted by their respective publishers. Uro Calculators is an independent collection and is not affiliated with these organizations. Clinical tools support—not replace—professional judgement.</div>
 <script>
 (function(){'use strict';
@@ -37,6 +157,33 @@ ids.forEach(id=>{let n=document.getElementById(id),r=document.getElementById(id+
 function calculate(){let [h,d,w]=ids.map(id=>Math.max(0,Number(document.getElementById(id).value)||0)),mm3;if(shape==='sphere'){let mean=(h+d+w)/3;mm3=Math.PI*Math.pow(mean,3)/6;document.getElementById('formula').textContent='Sphere formula: V = π × D³ / 6, using the mean of the three dimensions as diameter.';}else{mm3=Math.PI*h*d*w/6;document.getElementById('formula').textContent='Ellipsoid formula: V = π × height × depth × width / 6.';}document.getElementById('volumeCm').textContent=(mm3/1000).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3})+' cm³';document.getElementById('volumeMm').textContent=mm3.toLocaleString(undefined,{maximumFractionDigits:1,minimumFractionDigits:1})+' mm³';}
 document.getElementById('reset').addEventListener('click',()=>{ids.forEach(id=>{document.getElementById(id).value=defaults[id];document.getElementById(id+'Range').value=defaults[id];});shape='sphere';document.querySelectorAll('[data-shape]').forEach(b=>b.classList.toggle('active',b.dataset.shape==='sphere'));calculate();});
 document.getElementById('copyResult').addEventListener('click',async function(){let text='Stone volume: '+document.getElementById('volumeCm').textContent+' ('+document.getElementById('volumeMm').textContent+'). '+document.getElementById('formula').textContent;try{await navigator.clipboard.writeText(text);this.textContent='Copied!';}catch(e){let ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');this.textContent='Copied!';}catch(_){this.textContent='Copy unavailable';}ta.remove();}setTimeout(()=>this.textContent='Copy result',1500);});
+
+function selectedRenal(name){const el=document.querySelector('input[name="'+name+'"]:checked');return el?el.value:'';}
+function calculateRenal(){
+  const r=Number(selectedRenal('renalR'));
+  const e=Number(selectedRenal('renalE'));
+  const n=Number(selectedRenal('renalN'));
+  const l=Number(selectedRenal('renalL'));
+  const a=selectedRenal('renalA');
+  const h=document.getElementById('renalH').checked;
+  const total=r+e+n+l;
+  const group=total<=6?'Low complexity':(total<=9?'Intermediate complexity':'High complexity');
+  const detail=total<=6?'Lower anatomical complexity group.':(total<=9?'Intermediate anatomical complexity group.':'Higher anatomical complexity group.');
+  document.getElementById('renalTotal').textContent=String(total)+a+(h?'h':'');
+  document.getElementById('renalComplexity').textContent=group;
+  document.getElementById('renalRisk').textContent=total<=6?'6.4%':(total<=9?'11.1%':'21.9%');
+  document.getElementById('renalScoreDescription').textContent='Numeric score: '+total+' of 12. '+detail;
+  document.getElementById('renalBreakdown').innerHTML='<span class="renal-chip">R '+r+'</span><span class="renal-chip">E '+e+'</span><span class="renal-chip">N '+n+'</span><span class="renal-chip">L '+l+'</span><span class="renal-chip">A '+a+'</span>'+(h?'<span class="renal-chip">Hilar (h)</span>':'');
+  document.getElementById('renalMeterFill').style.width=((total-4)/8*100)+'%';
+}
+['renalR','renalE','renalN','renalA','renalL'].forEach(name=>document.querySelectorAll('input[name="'+name+'"]').forEach(el=>el.addEventListener('change',calculateRenal)));
+document.getElementById('renalH').addEventListener('change',calculateRenal);
+document.getElementById('renalReset').addEventListener('click',()=>{
+  [['renalR','1'],['renalE','1'],['renalN','1'],['renalA','a'],['renalL','1']].forEach(([name,value])=>{const el=document.querySelector('input[name="'+name+'"][value="'+value+'"]');if(el)el.checked=true;});
+  document.getElementById('renalH').checked=false;
+  calculateRenal();
+});
+
 activate('stone');calculate();
 })();
 </script></body></html>
